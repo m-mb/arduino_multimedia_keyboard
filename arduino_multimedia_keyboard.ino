@@ -3,8 +3,8 @@
 
 //32u4 based interrupt pins: 0,1,2,3,7 (0&1 only if no Serial communication is needed)
 const byte interruptPinMute = 1;
-const byte interruptPinPlayPause = 2;
-const byte interruptPinNext = 3;
+const byte interruptPinPlayPause = 3;
+const byte interruptPinNext = 2;
 const byte interruptPinPrev = 7;
 const byte interruptPinVolRot = 8;
 const byte interruptPinVolRot2 = 9;
@@ -22,17 +22,11 @@ void setup() {
 
   //configure Pins
   pinMode(interruptPinMute, INPUT_PULLUP);
-  digitalWrite(interruptPinMute, HIGH);
   pinMode(interruptPinPlayPause, INPUT_PULLUP);
-  digitalWrite(interruptPinPlayPause, HIGH);
   pinMode(interruptPinNext, INPUT_PULLUP);
-  digitalWrite(interruptPinNext, HIGH);
   pinMode(interruptPinPrev, INPUT_PULLUP);
-  digitalWrite(interruptPinPrev, HIGH);
   pinMode(interruptPinVolRot, INPUT_PULLUP);
-  digitalWrite(interruptPinVolRot, HIGH);
   pinMode(interruptPinVolRot2, INPUT_PULLUP);
-  digitalWrite(interruptPinVolRot2, HIGH);
 
   //configure voltage supply rotary
   pinMode(4, OUTPUT);
@@ -59,7 +53,6 @@ void setup() {
   sei();
 
   Keyboard.begin();
-  Serial.end(); //end serial communication just to be sure that pin 0 and 1 are available for GPIO use
 
   delay(500);
 }
@@ -75,10 +68,12 @@ ISR(PCINT0_vect) {
     // do nothing
   }
   else if (result == DIR_CW) {
-    Consumer.write(MEDIA_VOLUME_UP);
+    Consumer.press(MEDIA_VOLUME_UP);
+    Consumer.release(MEDIA_VOLUME_UP);
   }
   else if (result == DIR_CCW) {
-    Consumer.write(MEDIA_VOLUME_DOWN);
+    Consumer.press(MEDIA_VOLUME_DOWN);
+    Consumer.release(MEDIA_VOLUME_DOWN);
   }
 }
 
@@ -95,7 +90,8 @@ void next() {
   unsigned long currentTime = millis();
   if ((currentTime - lastTickNext) > DEBOUNCE_TIME) {
     lastTickNext = currentTime;
-    Consumer.write(MEDIA_NEXT);
+    Consumer.press(MEDIA_NEXT);
+    Consumer.release(MEDIA_NEXT);
   }
 }
 
@@ -103,7 +99,8 @@ void prev() {
   unsigned long currentTime = millis();
   if ((currentTime - lastTickPrev) > DEBOUNCE_TIME) {
     lastTickPrev = currentTime;
-    Consumer.write(MEDIA_PREV);
+    Consumer.press(MEDIA_PREV);
+    Consumer.release(MEDIA_PREV);
   }
 }
 
@@ -111,6 +108,7 @@ void playPause() {
   unsigned long currentTime = millis();
   if ((currentTime - lastTickPlayPause) > DEBOUNCE_TIME) {
     lastTickPlayPause = currentTime;
-    Consumer.write(MEDIA_PLAY_PAUSE);
+    Consumer.press(MEDIA_PLAY_PAUSE);
+    Consumer.release(MEDIA_PLAY_PAUSE);
   }
 }
